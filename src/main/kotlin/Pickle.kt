@@ -3,7 +3,7 @@ import org.junit.jupiter.api.DynamicContainer.dynamicContainer
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 
-class Kukumber {
+class Pickle {
 
     private val features: MutableList<Feature> = mutableListOf()
 
@@ -19,7 +19,8 @@ class Kukumber {
 
     private fun featureNodes(): List<DynamicContainer> {
         return features.map {
-            dynamicContainer("Feature: ${it.featureName}", it.scenarioNodes())
+            val displayName = "Feature: ${it.featureName}"
+            dynamicContainer(displayName, it.scenarioNodes())
         }
     }
 }
@@ -51,11 +52,18 @@ class Scenario(val scenarioName: String) {
 
     private val steps: MutableList<Step> = mutableListOf()
 
-    fun given(givenName: String, executable: () -> Unit) {
+    @Suppress("FunctionName")
+    fun Given(givenName: String, executable: () -> Unit = {}) {
         step("Given $givenName") { executable() }
     }
 
-    fun then(thenName: String, executable: () -> Unit) {
+    @Suppress("FunctionName")
+    fun When(whenName: String, executable: () -> Unit = {}) {
+        step("When $whenName") { executable() }
+    }
+
+    @Suppress("FunctionName")
+    fun Then(thenName: String, executable: () -> Unit = {}) {
         step("then $thenName") { executable() }
     }
 
