@@ -1,5 +1,4 @@
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 class ExampleTest : PickleJar() {
 
@@ -9,52 +8,38 @@ class ExampleTest : PickleJar() {
         pickle.feature(
             "Is it friday yet?", "Everyone wants to know when it's Friday"
         ) {
-            scenario("Sunday isn't Friday") {
-
-                Given("Today is Sunday") {
-                    today = "Sunday"
-                }
-
-                Then("it is not Friday") {
-                    assertFalse(isItFriday(today))
-                }
-            }
-
-            scenario("Monday isn't Friday") {
-                Given("Today is Monday") {
-                    today = "Monday"
-                }
-
-                Then("it is not Friday") {
-                    assertFalse(isItFriday(today))
+            val weekdays = listOf(
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+            )
+            weekdays.filterNot { it == "Friday" }.forEach { weekday ->
+                scenario("$weekday is not Friday") {
+                    Given("Today is $weekday") {
+                        today = weekday
+                    }
+                    var result: Boolean? = null
+                    When("it is checked if today is Friday") {
+                        result = isItFriday(today)
+                    }
+                    Then("the result is false") {
+                        assertEquals<Boolean?>(false, result)
+                    }
                 }
             }
-
-            scenario("Friday is Friday") {
-                Given("Today is Friday") {
-                    today = "Friday"
+            weekdays.filter { it == "Friday" }.forEach { weekday ->
+                scenario("$weekday is Friday") {
+                    Given("Today is $weekday") {
+                        today = weekday
+                    }
+                    var result: Boolean? = null
+                    When("it is checked if today is Friday") {
+                        result = isItFriday(today)
+                    }
+                    Then("the result is false") {
+                        assertEquals<Boolean?>(true, result)
+                    }
                 }
-
-                Then("it is not Friday") {
-                    assertTrue(isItFriday(today))
-                }
-            }
-        }
-
-
-        pickle.feature(
-            "Feature descriptions are presented", """
-            The description of a feature can provide more information. I may even
-            go across multiple lines.
-            """.trimIndent()
-        ) {
-            scenario("The feature description is set") {
-                Given("a feature with a description")
-                When("the test is executed")
-                Then("the description is logged to stdout")
             }
         }
-
 
     }
 
