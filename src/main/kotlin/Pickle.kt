@@ -50,31 +50,32 @@ class Feature(
 
 class Scenario(val scenarioName: String) {
 
-    private val steps: MutableList<Step> = mutableListOf()
+    private var givenStep: Step? = null
+    private var whenStep: Step? = null
+    private var thenStep: Step? = null
 
     @Suppress("FunctionName")
-    fun Given(givenName: String, executable: () -> Unit = {}) {
-        step("Given $givenName") { executable() }
+    fun <Fixture> Fixture.Given(givenName: String, executable: Fixture.() -> Unit = {}) {
+        givenStep = Step("Given $givenName") { executable() }
     }
 
     @Suppress("FunctionName")
     fun When(whenName: String, executable: () -> Unit = {}) {
-        step("When $whenName") { executable() }
+        whenStep = Step("When $whenName") { executable() }
     }
 
     @Suppress("FunctionName")
     fun Then(thenName: String, executable: () -> Unit = {}) {
-        step("then $thenName") { executable() }
+        thenStep = Step("then $thenName") { executable() }
     }
 
-    private fun step(stepName: String, executable: () -> Unit) {
-        steps.add(Step(stepName, executable))
-    }
 
     fun executeScenario(): DynamicTest {
-        val testName = steps.joinToString { step -> step.stepName }
+        val testName = listOfNotNull(givenStep, whenStep, thenStep).joinToString { step -> step.stepName }
         return dynamicTest(testName) {
-            steps.forEach { it.stepExecutable.invoke() }
+            givenStep?.stepExecutable()
+            whenStep?.stepExecutable()
+            thenStep?.stepExecutable()
         }
     }
 }
